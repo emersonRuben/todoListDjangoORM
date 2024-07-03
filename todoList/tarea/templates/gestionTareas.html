@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Tareas{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title" style="background-color: #b3cde0; padding: 10px; border-radius: 5px;">Agregar Tarea</h2>
+                    <form action="{% url 'agregar_tarea' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="text" id="txtTitulo" name="txtTitulo" class="form-control" placeholder="Título" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea id="txtDescripcion" name="txtDescripcion" class="form-control" placeholder="Descripción" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <input type="date" id="txtFechaVencimiento" name="txtFechaVencimiento" class="form-control" placeholder="Fecha de Vencimiento" required>
+                        </div>
+                        <div class="py-2">
+                            <button type="submit" class="btn btn-primary btn-block" style="background-color: #6d9eeb; border-color: #6d9eeb;">Agregar Tarea</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title" style="background-color: #b3cde0; padding: 10px; border-radius: 5px;">Tareas</h2>
+                    <form action="{% url 'buscar_tareas' %}" method="GET" class="d-flex">
+                        <input class="form-control me-2" type="search" placeholder="Buscar tareas" aria-label="Buscar" name="q">
+                        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-striped" style="background-color: #e0ebf5;">
+                            <thead>
+                                <tr class="text-center">
+                                    <th class="text-center">Numero</th>
+                                    <th>Título</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha de Vencimiento</th>
+                                    <th>Completada</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tarea in listadoTareas %}
+                                <tr class="{% if tarea.completada %}tarea-completada{% endif %}">
+                                    <td class="text-center">{{ forloop.counter }}</td>
+                                    <td>{{ tarea.titulo }}</td>
+                                    <td>{{ tarea.descripcion }}</td>
+                                    <td>{{ tarea.fecha_vencimiento }}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <form action="{% url 'actualizar_tarea' %}" method="POST">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="tarea_id" value="{{ tarea.id }}">
+                                                <input type="checkbox" name="completada" value="1" onchange="this.form.submit()" {% if tarea.completada %}checked{% endif %}>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td class="d-flex">
+                                        <!-- Botón para editar tarea -->
+                                        <a href="{% url 'editar_tarea' tarea.id %}" class="m-3">
+                                            <button type="button" class="btn btn-primary" style="background-color: #6d9eeb; border-color: #6d9eeb;">
+                                                Editar
+                                            </button>
+                                        </a>                                
+
+                                        <!-- Botón para eliminar tarea -->
+                                        <button type="button" class="btn btn-danger m-3" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal{{ tarea.id }}" style="background-color: #eb6d6d; border-color: #eb6d6d;">
+                                            Eliminar
+                                        </button>
+
+                                        <!-- Modal de Confirmación para Eliminar Tarea -->
+                                        <div class="modal fade" id="confirmarEliminarModal{{ tarea.id }}" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
+                                          <div class="modal-dialog">
+                                            <div class="modal-content" style="background-color: #f0ebf5;">
+                                              <div class="modal-header">
+                                                <h5 class="modal-title" id="confirmarEliminarModalLabel" style="color: #6d9eeb;">Confirmar Eliminación</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                              </div>
+                                              <div class="modal-body">
+                                                ¿Estás seguro de que deseas eliminar la tarea "{{ tarea.titulo }}"?
+                                              </div>
+                                              <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #b3cde0; border-color: #b3cde0;">Cancelar</button>
+                                                <a href="{% url 'eliminar_tarea' tarea.id %}" class="btn btn-danger" style="background-color: #eb6d6d; border-color: #eb6d6d;">Eliminar</a>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}
+Resultados de Búsqueda
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title" style="background-color: #b3cde0; padding: 10px; border-radius: 5px;">Resultados de Búsqueda</h2>
+            {% if query %}
+                <p class="text-center" style="color: #FF4081;">Mostrando resultados para: "{{ query }}"</p>
+            {% endif %}
+            <div class="table-responsive">
+                <table class="table table-striped" style="background-color: #e0ebf5;">
+                    <thead class="thead-dark">
+                        <tr class="text-center">
+                            <th>Numero</th>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Fecha de Vencimiento</th>
+                            <th>Completada</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tarea in tareas %}
+                        <tr class="{% if tarea.completada %}tarea-completada{% endif %}">
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td>{{ tarea.titulo }}</td>
+                            <td>{{ tarea.descripcion }}</td>
+                            <td>{{ tarea.fecha_vencimiento }}</td>
+                            <td>
+                                <input type="checkbox" disabled {% if tarea.completada %}checked{% endif %} class="form-check-input">
+                            </td>
+                            <td class="d-flex justify-content-center">
+                                <a href="{% url 'editar_tarea' tarea.id %}" class="m-1">
+                                    <button type="button" class="btn btn-primary btn-sm" style="background-color: #6d9eeb; border-color: #6d9eeb;">
+                                        Editar
+                                    </button>
+                                </a>                                
+                                <button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#confirmarEliminarModal{{ tarea.id }}" style="background-color: #eb6d6d; border-color: #eb6d6d;">
+                                    Eliminar
+                                </button>
+                                
+                                <div class="modal fade" id="confirmarEliminarModal{{ tarea.id }}" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel{{ tarea.id }}" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content" style="background-color: #f0ebf5;">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmarEliminarModalLabel{{ tarea.id }}" style="color: #6d9eeb;">Confirmar Eliminación</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        ¿Estás seguro de que deseas eliminar la tarea "{{ tarea.titulo }}"?
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #b3cde0; border-color: #b3cde0;">Cancelar</button>
+                                        <a href="{% url 'eliminar_tarea' tarea.id %}" class="btn btn-danger" style="background-color: #eb6d6d; border-color: #eb6d6d;">Eliminar</a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center" style="color: #FF4081;">No se encontraron tareas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

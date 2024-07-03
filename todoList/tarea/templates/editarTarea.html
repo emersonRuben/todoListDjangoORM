@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Tarea{% endblock %}
+
+{% block body %}
+<div class="container mt-4" style="background-color: #f0f0f0; padding: 20px; border-radius: 10px;">
+    <div class="row">
+        <div class="col-md">
+            <h2 style="color: #333;">Editar Tarea</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form action="{% url 'editar_tarea' tarea.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group bt-2">
+                            <label for="txtTitulo">Título</label>
+                            <input type="text" id="txtTitulo" name="txtTitulo" class="form-control" value="{{ tarea.titulo }}" required>
+                        </div>
+                        <div class="form-group bt-2">
+                            <label for="txtDescripcion">Descripción</label>
+                            <textarea id="txtDescripcion" name="txtDescripcion" class="form-control" rows="3">{{ tarea.descripcion }}</textarea>
+                        </div>
+                        <div class="form-group bt-2">
+                            <label for="txtFechaVencimiento">Fecha de Vencimiento</label>
+                            <input type="text" id="txtFechaVencimiento" name="txtFechaVencimiento" class="form-control" value="{% if tarea.fecha_vencimiento %}{{ tarea.fecha_vencimiento|date:'Y-m-d' }}{% endif %}" placeholder="yyyy-mm-dd">
+                        </div>
+                        <div class="form-group form-check bt-2">
+                            <input type="checkbox" id="chkCompletada" name="chkCompletada" class="form-check-input" {% if tarea.completada %}checked{% endif %}>
+                            <label class="form-check-label" for="chkCompletada">Completada</label>
+                        </div>
+                        
+                        <button type="submit" name="guardar_cambios" class="btn btn-primary" style="background-color: #6d9eeb; border-color: #6d9eeb;">Guardar Cambios</button>
+                        <a href="/" class="btn btn-secondary" style="background-color: #ccc; border-color: #ccc;">Cancelar</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
